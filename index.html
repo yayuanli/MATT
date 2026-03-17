@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos. CVPR 2026.">
+  <meta name="keywords" content="Mistake Attribution, Egocentric Video, MisFormer, MisEngine, CVPR 2026">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos</title>
+
+  <!-- TODO: Replace with your Google Analytics ID, or remove -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=TODO_GA_ID"></script> -->
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="TODO_HOMEPAGE_URL">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Title / Authors / Links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="TODO_YAYUAN_URL">Yayuan Li</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="TODO_AADIT_URL">Aadit Jain</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="TODO_FILIPPOS_URL">Filippos Bellos</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="TODO_CORSO_URL">Jason J. Corso</a><sup>1,2</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>University of Michigan,</span>
+            <span class="author-block"><sup>2</sup>Voxel51</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="font-weight: bold;">CVPR 2026</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="TODO_PDF_URL"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href="TODO_ARXIV_URL"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="TODO_VIDEO_URL"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="TODO_CODE_URL"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="TODO_DATASET_URL"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <!-- TODO: Replace with teaser image or video -->
+      <img src="TODO_TEASER_IMAGE" alt="Teaser figure showing the Mistake Attribution task." style="width: 100%;">
+      <h2 class="subtitle has-text-centered">
+        <!-- TODO: Write a one-line teaser caption -->
+        <b>Mistake Attribution</b> answers <i>what</i> semantic role was violated, <i>when</i> the mistake became irreversible, and <i>where</i> it occurred in the frame.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<!-- Abstract -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <!-- TODO: Paste your abstract here -->
+          <p>
+            TODO_ABSTRACT_TEXT
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <!-- TODO: Replace with your YouTube video embed URL -->
+          <iframe src="TODO_YOUTUBE_EMBED_URL"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<!-- Method Overview -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+
+        <h3 class="title is-4">MisEngine: Data Engine</h3>
+        <div class="content has-text-justified">
+          <p>
+            <!-- TODO: Brief description of MisEngine -->
+            TODO_MISENGINE_DESCRIPTION
+          </p>
+        </div>
+        <!-- TODO: Replace with MisEngine pipeline figure -->
+        <div class="has-text-centered">
+          <img src="TODO_MISENGINE_FIGURE" alt="MisEngine data engine pipeline." style="width: 100%;">
+        </div>
+        <br/>
+
+        <h3 class="title is-4">MisFormer: Model Architecture</h3>
+        <div class="content has-text-justified">
+          <p>
+            <!-- TODO: Brief description of MisFormer -->
+            TODO_MISFORMER_DESCRIPTION
+          </p>
+        </div>
+        <!-- TODO: Replace with MisFormer architecture figure -->
+        <div class="has-text-centered">
+          <img src="TODO_MISFORMER_FIGURE" alt="MisFormer architecture overview." style="width: 100%;">
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Results</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            <!-- TODO: Brief results summary -->
+            TODO_RESULTS_DESCRIPTION
+          </p>
+        </div>
+
+        <!-- TODO: Add qualitative results images/videos here -->
+        <div class="has-text-centered">
+          <img src="TODO_QUALITATIVE_RESULTS" alt="Qualitative results." style="width: 100%;">
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>TODO_BIBTEX_ENTRY</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="TODO_PDF_URL">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="TODO_CODE_URL" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is based on the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template
+            and is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

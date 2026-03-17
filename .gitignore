@@ -1,0 +1,16 @@
+# Python
+*.py
+*.pyc
+__pycache__/
+
+# Data & working files
+dataset_raw/
+working_journal/
+src/
+
+# IDE
+.vscode/
+.claude/
+
+# OS
+.DS_Store
