@@ -41,7 +41,7 @@
   </div>
   <div class="navbar-menu">
     <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="TODO_HOMEPAGE_URL">
+      <a class="navbar-item" href="https://yayuanli.github.io/MATT/">
       <span class="icon">
           <i class="fas fa-home"></i>
       </span>
@@ -60,13 +60,13 @@
           <h1 class="title is-1 publication-title">Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos</h1>
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="TODO_YAYUAN_URL">Yayuan Li</a><sup>1</sup>,</span>
+              <a href="https://www.linkedin.com/in/yayuan-li-148659272/">Yayuan Li</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="TODO_AADIT_URL">Aadit Jain</a><sup>1</sup>,</span>
+              <a href="https://www.linkedin.com/in/jain-aadit/">Aadit Jain</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="TODO_FILIPPOS_URL">Filippos Bellos</a><sup>1</sup>,</span>
+              <a href="https://www.linkedin.com/in/filippos-bellos-168595156/">Filippos Bellos</a><sup>1</sup>,</span>
             <span class="author-block">
-              <a href="TODO_CORSO_URL">Jason J. Corso</a><sup>1,2</sup></span>
+              <a href="https://www.linkedin.com/in/jason-corso/">Jason J. Corso</a><sup>1,2</sup></span>
           </div>
 
           <div class="is-size-5 publication-authors">
@@ -79,9 +79,26 @@
           </div>
 
           <div class="column has-text-centered">
-            <p class="is-size-5" style="margin-top: 1rem; color: #666;">
-              <i>Paper, code, and data — coming soon.</i>
-            </p>
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2511.20525" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/yayuanli/MATT" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/yayuanli/MistakeAttributionDataset" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="far fa-images"></i></span>
+                  <span>Dataset</span>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -94,7 +111,7 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <!-- TODO: Replace with teaser image or video -->
-      <img src="TODO_TEASER_IMAGE" alt="Teaser figure showing the Mistake Attribution task." style="width: 100%;">
+      <img src="./static/images/teaser.png" alt="Teaser figure showing the Mistake Attribution task." style="width: 100%;">
       <h2 class="subtitle has-text-centered">
         <!-- TODO: Write a one-line teaser caption -->
         <b>Mistake Attribution</b> answers <i>what</i> semantic role was violated, <i>when</i> the mistake became irreversible, and <i>where</i> it occurred in the frame.
@@ -111,9 +128,17 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
-          <!-- TODO: Paste your abstract here -->
           <p>
-            TODO_ABSTRACT_TEXT
+            We introduce Mistake Attribution (MATT), a new task for fine-grained understanding of human mistakes in egocentric videos. While prior work detects whether a mistake occurs, MATT attributes the mistake to <i>what</i> part of the instruction is violated (semantic role), <i>when</i> in the video the deviation becomes irreversible (the Point-of-No-Return, PNR), and <i>where</i> the mistake appears in the PNR frame.
+          </p>
+          <p>
+            We develop MisEngine, a data engine that automatically constructs mistake samples from existing datasets with attribution-rich annotations. Applied to large egocentric corpora, MisEngine yields EPIC-KITCHENS-M and Ego4D-M&mdash;two datasets up to two orders of magnitude larger than prior mistake datasets.
+          </p>
+          <p>
+            We then present MisFormer, a unified attention-based model for mistake attribution across semantic, temporal, and spatial dimensions, trained with MisEngine supervision. A human study demonstrates the ecological validity of our MisEngine-constructed mistake samples, confirming that EPIC-KITCHENS-M and Ego4D-M can serve as reliable benchmarks for mistake understanding.
+          </p>
+          <p>
+            Experiments on both our datasets and prior benchmarks show that MisFormer, as a single unified model, outperforms task-specific SOTA methods by at least 6.66%, 21.81%, 18.7%, and 3.00% in video-language understanding, temporal localization, hand-object interaction, and mistake detection, respectively.
           </p>
         </div>
       </div>
@@ -145,26 +170,24 @@
         <h3 class="title is-4">MisEngine: Data Engine</h3>
         <div class="content has-text-justified">
           <p>
-            <!-- TODO: Brief description of MisEngine -->
-            TODO_MISENGINE_DESCRIPTION
+            A significant challenge in mistake video analysis is the paucity of available data in the face of massive diversity of possible mistakes. MisEngine overcomes this by automatically creating new mistake understanding datasets from source corpora through a careful series of sampling and cross-matching methods. It uses Semantic Role Labeling on the text instruction and then matches across the available roles (e.g., Object and Predicate), systematically cross-matching an instruction text with descriptions of other action videos to create misaligned pairs. Videos naturally inherit temporal and spatial annotations that we process into the corresponding attribution targets. Applied to Ego4D and EPIC-KITCHENS, MisEngine yields Ego4D-M (257K samples) and EPIC-KITCHENS-M (221K samples)&mdash;at least two orders of magnitude larger than any existing mistake dataset.
           </p>
         </div>
         <!-- TODO: Replace with MisEngine pipeline figure -->
         <div class="has-text-centered">
-          <img src="TODO_MISENGINE_FIGURE" alt="MisEngine data engine pipeline." style="width: 100%;">
+          <img src="./static/images/misengine.png" alt="MisEngine data engine pipeline." style="width: 100%;">
         </div>
         <br/>
 
         <h3 class="title is-4">MisFormer: Model Architecture</h3>
         <div class="content has-text-justified">
           <p>
-            <!-- TODO: Brief description of MisFormer -->
-            TODO_MISFORMER_DESCRIPTION
+            MisFormer jointly processes the instruction text and an attempt video, extracting shared multimodal features. Three specialized transformer heads perform semantic attribution (detecting misaligned roles), temporal localization (pinpointing the Point-of-No-Return frame), and spatial localization (predicting mistake regions via attention-driven bounding boxes), enabling comprehensive and interpretable mistake analysis across semantic, temporal, and spatial dimensions. At inference, the temporal and spatial modules are gated&mdash;invoked only when any role is predicted as Mistake.
           </p>
         </div>
         <!-- TODO: Replace with MisFormer architecture figure -->
         <div class="has-text-centered">
-          <img src="TODO_MISFORMER_FIGURE" alt="MisFormer architecture overview." style="width: 100%;">
+          <img src="./static/images/misformer.png" alt="MisFormer architecture overview." style="width: 100%;">
         </div>
 
       </div>
@@ -182,14 +205,13 @@
 
         <div class="content has-text-justified">
           <p>
-            <!-- TODO: Brief results summary -->
-            TODO_RESULTS_DESCRIPTION
+            Experiments show that existing methods&mdash;even when specialized for individual subtasks&mdash;struggle to address MATT, underscoring its challenge. MisFormer, as a single unified model, consistently outperforms strong baselines including Video-Language Models, Temporal Localization Models, Hand-Object Interaction detectors, and mistake detection methods on both our and prior benchmarks, surpassing task-specific SOTA methods by at least 6.66%, 21.81%, 18.7%, and 3.00% in video-language understanding, temporal localization, hand-object interaction, and mistake detection, respectively.
           </p>
         </div>
 
         <!-- TODO: Add qualitative results images/videos here -->
         <div class="has-text-centered">
-          <img src="TODO_QUALITATIVE_RESULTS" alt="Qualitative results." style="width: 100%;">
+          <img src="./static/images/results.png" alt="Qualitative results." style="width: 100%;">
         </div>
 
       </div>
@@ -202,7 +224,12 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>TODO_BIBTEX_ENTRY</code></pre>
+    <pre><code>@inproceedings{li2026mistakeattribution,
+  title     = {Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos},
+  author    = {Li, Yayuan and Jain, Aadit and Bellos, Filippos and Corso, Jason J.},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2026},
+}</code></pre>
   </div>
 </section>
 
@@ -210,10 +237,10 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a class="icon-link" href="TODO_PDF_URL">
+      <a class="icon-link" href="https://arxiv.org/pdf/2511.20525">
         <i class="fas fa-file-pdf"></i>
       </a>
-      <a class="icon-link" href="TODO_CODE_URL" class="external-link" disabled>
+      <a class="icon-link" href="https://github.com/yayuanli/MATT" class="external-link">
         <i class="fab fa-github"></i>
       </a>
     </div>
