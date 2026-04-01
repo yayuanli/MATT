@@ -5,7 +5,6 @@ tmp/
 
 
 # Python
-*.py
 *.pyc
 __pycache__/
 
