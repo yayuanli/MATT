@@ -4,7 +4,6 @@
 tmp/
 
 
-
 # Python
 *.py
 *.pyc
@@ -14,6 +13,12 @@ __pycache__/
 dataset_raw/
 working_journal/
 src/
+
+# Files in semantic_attr
+semantic_attr/bash/
+semantic_attr/model/checkpoint_best.pt
+semantic_attr/results/
+semantic_attr/venv/
 
 # IDE
 .vscode/

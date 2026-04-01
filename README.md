@@ -33,17 +33,36 @@ We introduce **Mistake Attribution (MATT)**, a new task for fine-grained underst
 
 ## 🛠️ 2. Environment Setup
 
-Coming soon.
+> **Tested Environment**: CUDA 11.7, Ubuntu, Python 3.9
 
+> **Note**: Python 3.9 is recommended
+
+```bash
+# Clone Repository
+git clone https://github.com/yayuanli/MATT.git
+cd MATT/semantic_attr
+
+# Create Environment
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+```
 
 ## 🚀 3. Evaluation & Inference
 
-Coming soon.
+EgoPER:
+
+
+
+Ego4D, EpicKitchen, HoloAssist:
+
+
 
 
 ## 📊 4. Model Training
 
-Coming soon.
+Training uses [Weights & Biases](https://wandb.ai/) for logging. Make sure you have run `wandb login` during environment setup.
 
 
 ## 📜 Citation
