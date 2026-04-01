@@ -26,7 +26,7 @@ import torchvision.transforms as transforms
 import decord
 import pandas as pd
 
-class Ego4DDatasetTrain(Dataset):
+class Ego4DDataset(Dataset):
 
     def video_loader(self, clip1_uid, clip1_sf, clip1_ef, clip2_uid, clip2_sf, clip2_ef):
         start = int(clip1_sf) # + 1

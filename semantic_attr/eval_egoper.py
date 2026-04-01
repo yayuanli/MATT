@@ -16,11 +16,11 @@ def get_args_parser():
     parser.add_argument('--root1',
                         type=str,
                         required=True,
-                        help='Absolute path to dataset frames')
+                        help='Path to dataset frames')
     parser.add_argument('--category',
                         default='all',
                         type=str,
-                        help='Food category to evaluate for EgoPER (coffee, oatmeal, pinwheels, quesadilla, tea, all)')
+                        help='Food category to evaluate for EgoPER. Choose from "coffee", "oatmeal", "pinwheels", "quesadilla", "tea", or "all"')
     parser.add_argument('--pretrain',
                         type=str,
                         required=True,
@@ -28,7 +28,7 @@ def get_args_parser():
     parser.add_argument('--test_dataset_path',
                         type=str,
                         required=True,
-                        help='Absolute path to folder containing test xlsx files per food category')
+                        help='Path to folder containing test xlsx files per food category')
     parser.add_argument('--test_size',
                         default=0,
                         type=int,
@@ -37,7 +37,7 @@ def get_args_parser():
                         default="all",
                         type=str,
                         help='Refers to type of checkpoint to evaluate. Choose "verb", "arg", "video", or "all".')
-    parser.add_argument('--LaViLa_ckpt', default='./model/checkpoint_best.pt', type=str, help='Relative path to LaViLa checkpoint')
+    parser.add_argument('--LaViLa_ckpt', default='./model/checkpoint_best.pt', type=str, help='Path to LaViLa checkpoint')
     parser.add_argument('--clip_length', default=30, type=int, help='Number of video frames sampled from each video clip')
     parser.add_argument('--batch_size', default=16, type=int, help='Batch size for inference')
     parser.add_argument('--num_workers', default=24, type=int, help='Number of workers for data loading')
@@ -70,32 +70,32 @@ def testing(args, model, test_dataloader, test_size, verb_metrics, arg_metrics, 
 
     idx = 0
 
-    for j, (frames, v, arg1, label) in enumerate(test_dataloader):
+    with torch.no_grad():
+        for j, (frames, v, arg1, label) in enumerate(test_dataloader):
+            frames = frames.to(device=f'cuda:{rank}')
+            logits = model(frames, v, arg1, rank).to(device=f'cuda:{rank}')
+            
+            label = label.to(device=f'cuda:{rank}')
+            label = label.int()
 
-        frames = frames.to(device=f'cuda:{rank}')
-        logits = model(frames, v, arg1, rank).to(device=f'cuda:{rank}')
-        
-        label = label.to(device=f'cuda:{rank}')
-        label = label.int()
+            v_actual = torch.max(label[:, 0, :], dim=1)[1]
+            arg_actual = torch.max(label[:, 1, :], dim=1)[1]
 
-        v_actual = torch.max(label[:, 0, :], dim=1)[1]
-        arg_actual = torch.max(label[:, 1, :], dim=1)[1]
+            v_results = torch.max(logits[:, 0, :], dim=1)[1]
+            arg_results = torch.max(logits[:, 1, :], dim=1)[1]
 
-        v_results = torch.max(logits[:, 0, :], dim=1)[1]
-        arg_results = torch.max(logits[:, 1, :], dim=1)[1]
+            #1 corresponsd to mistake/misalignement. 0 corresponds to correct/aligned
+            batch_size = v_results.size(0)
+            
+            v_classifications[idx:idx + batch_size] = v_results  # Store verb predictions
+            arg_classifications[idx:idx + batch_size] = arg_results  # Store argument predictions
+            video_classifications[idx:idx + batch_size] = torch.logical_or(v_results, arg_results)  # Combined predictions
+            
+            v_labels[idx:idx + batch_size] = v_actual  # Store verb actual labels
+            arg_labels[idx:idx + batch_size] = arg_actual  # Store argument actual labels
+            video_labels[idx:idx + batch_size] = torch.logical_or(v_actual, arg_actual)  # Combined actual labels
 
-        #1 corresponsd to mistake/misalignement. 0 corresponds to correct/aligned
-        batch_size = v_results.size(0)
-        
-        v_classifications[idx:idx + batch_size] = v_results  # Store verb predictions
-        arg_classifications[idx:idx + batch_size] = arg_results  # Store argument predictions
-        video_classifications[idx:idx + batch_size] = torch.logical_or(v_results, arg_results)  # Combined predictions
-        
-        v_labels[idx:idx + batch_size] = v_actual  # Store verb actual labels
-        arg_labels[idx:idx + batch_size] = arg_actual  # Store argument actual labels
-        video_labels[idx:idx + batch_size] = torch.logical_or(v_actual, arg_actual)  # Combined actual labels
-
-        idx += batch_size
+            idx += batch_size
 
     multi_class[(v_classifications == 0) & (arg_classifications == 0)] = 0
     multi_class[(v_classifications == 1) & (arg_classifications == 0)] = 1
@@ -217,6 +217,10 @@ def main(rank, world_size):
         result_file = os.path.join("results", "egoper", f"{args.pretrain}_pretrained_{args.category}_{ckpt_type}.txt")
 
         evaluate_model(args, model, test_dataloader, rank, world_size, result_file, df)
+
+        del model
+        del test_dataloader
+        del test_dataset
         torch.cuda.empty_cache()
     
     df.to_excel(f"./results/egoper/{args.pretrain}_pretrained_{args.category}_preds.xlsx") 
