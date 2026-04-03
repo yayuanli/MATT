@@ -67,16 +67,21 @@ Download instructions coming soon.
 **Frame Extraction:** Ego4D videos are distributed as clips (`.mp4`). The dataloader expects pre-extracted frames in the following structure:
 
 ```
-<frames_dir>/<clip_uid>_frames/00000.png
 <frames_dir>/<clip_uid>_frames/00001.png
+<frames_dir>/<clip_uid>_frames/00002.png
 ...
 ```
 
-Extract frames from each clip using `ffmpeg`:
+Use the provided script to extract frames from all clips:
 
 ```bash
-ffmpeg -i <clip_uid>.mp4 -vf "scale=640:360" -vsync vfr <clip_uid>_frames/%05d.png
+cd mis-engine/ego4d
+
+# Edit clips_dir and output_directory in the script, then run after changing the paths to the clip and output directory.
+python extract_frames.py
 ```
+
+This scans `clips_dir` for all `.mp4` files and extracts frames at 640×360 resolution using `ffmpeg`.
 
 > **Note:** Ego4D frame directories can span multiple storage locations. The dataloader accepts up to three root paths via `--root1`, `--root2`, and `--root3` and searches across all of them.
 
@@ -139,7 +144,7 @@ Frames are written to `<video_dir>/Export_py/video_frames/frame_00001.jpg` (5-di
 
 ### 3.1. Ego4D, EPIC-Kitchens, HoloAssist
 
-Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`).
+Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`). See the script's `argparse` for the full list of options.
 
 ```bash
 cd semantic_attr
@@ -152,25 +157,24 @@ python eval_model.py \
   --clip_length <num_frames>
 ```
 
-**Arguments:**
-
-| Argument | Description | Required |
-|----------|-------------|----------|
-| `--dataset` | Dataset name: `ego4d`, `epic-kitchens`, or `holoassist` | Yes |
-| `--root1` | Path to extracted frames directory | Yes |
-| `--root2`, `--root3` | Additional frame directories (Ego4D only, when frames span multiple drives) | No |
-| `--test_dataset_path` | Path to the test/evaluation `.xlsx` file | Yes |
-| `--checkpoint_type` | Which checkpoint to evaluate: `verb`, `arg`, `video`, or `all` (default: `all`) | No |
-| `--LaViLa_ckpt` | Path to LaViLa checkpoint (default: `./model/checkpoint_best.pt`) | No |
-| `--clip_length` | Frames sampled per clip — use **30** for Ego4D / EPIC-Kitchens, **8** for HoloAssist | No |
-| `--batch_size` | Inference batch size (default: 32) | No |
-| `--num_workers` | DataLoader workers (default: 12) | No |
-
-Results (per-checkpoint accuracy, precision, recall, F1, and balanced accuracy) are written to `results/<dataset>/`.
+Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`. Use `--clip_length 30` for Ego4D / EPIC-Kitchens and `--clip_length 8` for HoloAssist. For Ego4D, `--root2` and `--root3` can specify additional frame directories if frames are spread across multiple drives. Results are written to `results/<dataset>/`.
 
 ### 3.2. EgoPER
 
-EgoPER evaluation will be released in a future update.
+EgoPER uses a separate evaluation script (`eval_egoper.py`) because its models are fine-tuned from a pretrained Ego4D or EPIC-Kitchens checkpoint, and evaluation is done per food category. Checkpoints are **automatically downloaded** from Hugging Face (`mistakeattribution/egoper-finetuned-from-<pretrain>`). See the script's `argparse` for the full list of options.
+
+```bash
+cd semantic_attr
+export PYTHONPATH=$(pwd):$PYTHONPATH
+
+python eval_egoper.py \
+  --root1 /path/to/EgoPER_frames \
+  --category <food_category> \
+  --pretrain <pretrain_dataset> \
+  --test_dataset_path /path/to/EgoPER_splits
+```
+
+Set `--pretrain` to `ego4d` or `epic-kitchens` depending on which pretrained base was used. Set `--category` to a specific food (`coffee`, `oatmeal`, `pinwheels`, `quesadilla`, `tea`) or `all`. The `--test_dataset_path` should point to the parent directory containing per-category folders (each with a `test.xlsx`). Results are written to `results/egoper/`.
 
 ## 📊 4. Model Training
 
@@ -184,6 +188,8 @@ wandb login         # paste your API key when prompted
 ```
 
 ### 4.2. Running Training
+
+See `training_ddp.py`'s `argparse` for the full list of options.
 
 ```bash
 cd semantic_attr
@@ -202,35 +208,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python training_ddp.py \
   --wandb_project <project_name>
 ```
 
-**Arguments:**
-
-| Argument | Description | Default |
-|----------|-------------|---------|
-| `--dataset` | Dataset name: `ego4d`, `egoper`, `epic-kitchens`, or `holoassist` | *(required)* |
-| `--root1` | Path to extracted frames | *(required)* |
-| `--root2`, `--root3` | Additional frame directories (Ego4D only) | `""` |
-| `--category` | EgoPER food category: `coffee`, `oatmeal`, `pinwheels`, `quesadilla`, `tea`, or `all` | `""` |
-| `--train_dataset_path` | Path to training `.xlsx`. For EgoPER: the parent directory containing per-category splits | *(required)* |
-| `--train_filename` | Training filename within each EgoPER category folder | `alt_augment_training.xlsx` |
-| `--valid_dataset_path` | Path to validation `.xlsx`. For EgoPER: same parent directory as above | *(required)* |
-| `--test_dataset_path` | Path to test `.xlsx`, or `None` to skip test evaluation | `None` |
-| `--output_dir` | Directory where best checkpoints (`verb_model.pth`, `arg_model.pth`, `video_model.pth`) are saved | *(required)* |
-| `--recording_epochs` | Text file path for per-epoch validation metrics. For EgoPER: a directory (each category gets its own `.txt`) | *(required)* |
-| `--pretrained_ckpt` | Path to a `.pth` checkpoint to resume from, or `None` to train from scratch (LaViLa init only) | *(required)* |
-| `--LaViLa_ckpt` | Path to LaViLa backbone checkpoint | `./model/checkpoint_best.pt` |
-| `--clip_length` | Frames sampled per clip — use **30** for Ego4D / EPIC-Kitchens / EgoPER, **8** for HoloAssist | 30 |
-| `--global_batch_size` | Total batch size across all GPUs | 64 |
-| `--epochs` | Number of training epochs | 20 |
-| `--start_epoch` | Epoch to resume from | 0 |
-| `--learning_rate` | Optimizer learning rate | 0.0001 |
-| `--num_workers` | DataLoader workers per GPU | 12 |
-| `--wandb_project` | Weights & Biases project name | *(required)* |
-
-> **Note:** Set `CUDA_VISIBLE_DEVICES` to select which GPUs to use. The script automatically determines `world_size` from the number of visible devices.
+Set `--dataset` to `ego4d`, `egoper`, `epic-kitchens`, or `holoassist`. Use `--clip_length 8` for HoloAssist (default 30 works for all others). For Ego4D, use `--root2` / `--root3` if frames span multiple drives. For EgoPER, `--train_dataset_path` and `--valid_dataset_path` should point to the parent directory containing per-category folders, and `--category` selects the food category. Set `--pretrained_ckpt None` to train from scratch (LaViLa init only), or pass a `.pth` path to fine-tune from an existing checkpoint. Best checkpoints (`verb_model.pth`, `arg_model.pth`, `video_model.pth`) are saved to `--output_dir`. `CUDA_VISIBLE_DEVICES` controls which GPUs are used; the script determines `world_size` automatically.
 
 ## 🔧 5. MisEngine Data Construction Pipeline
 
-MisEngine constructs the Ego4D-M and EPIC-KITCHENS-M datasets by programmatically generating semantic-role misalignment samples from existing egocentric video annotations. Each pipeline produces augmented `.xlsx` splits ready for MisFormer training.
+MisEngine augments the Ego4D, EgoPER, EPIC-Kitchens, and HoloAssist datasets by programmatically generating semantic-role misalignment samples from existing egocentric video annotations. The method can be applied to any other dataset that follows the required structure.
 
 All augmentation scripts produce samples with four label classes:
 
@@ -245,7 +227,7 @@ All augmentation scripts produce samples with four label classes:
 
 The Ego4D pipeline maps narration-level annotations to clip-level frame coordinates and then generates misalignment samples.
 
-> **Note on ambiguous samples:** The source annotations may contain segments where the same `(video_uid, start_frame, end_frame)` tuple maps to multiple distinct verb or argument labels. These ambiguous segments have been **pre-filtered** from the provided annotation files. If starting from a raw parquet export, uncomment the filtering block in `clips.py`.
+> **Note on ambiguous samples:** The original Ego4D annotations contain "ambiguous" segments — video segments where the same `(video_uid, start_frame, end_frame)` tuple is associated with multiple distinct verb or argument labels. These accounted for ___% of the data used in our training/inference splits. The provided parquet and split files have been **pre-filtered** to remove these ambiguous segments. Note that the provided splits have considerable overlap with, but are not identical to, the splits used to train our released checkpoints. If you are starting from a raw parquet export, uncomment the filtering block in `clips.py` to perform this removal yourself.
 
 **Step 1 — Map to clip coordinates:**
 
@@ -330,17 +312,6 @@ python concatenate.py \
 
 Combines per-food validation and test splits into `all/validation.xlsx` and `all/test.xlsx`.
 
-**Step 5 — Extract frames:**
-
-```bash
-python extract_frames.py \
-  --input annotation.xlsx \
-  --egoper_dir /path/to/EgoPER \
-  --output_dir /path/to/EgoPER_frames
-```
-
-Extracts frames at 15 fps from each video referenced in the annotations using `ffmpeg`. See [Section 2.4](#24-egoper).
-
 ### 5.3. EPIC-Kitchens
 
 EPIC-Kitchens uses a single augmentation script that reads directly from the [official EPIC-Kitchens-100 annotations](https://github.com/epic-kitchens/epic-kitchens-100-annotations).
@@ -360,7 +331,7 @@ Reads `EPIC_100_{split}.csv`, renames columns to match the MisFormer schema (`ve
 
 The HoloAssist pipeline extracts fine-grained action annotations from the official JSON, splits by video ID, and generates misalignment samples.
 
-> **Note on ambiguous samples:** Some annotation segments in HoloAssist have multiple distinct verb or argument labels for the same `(video_id, start_frame, end_frame)` tuple. `df_fg.py` **automatically filters** these ambiguous segments from the output and reports how many were removed.
+> **Note on ambiguous samples:** Like Ego4D, some HoloAssist annotation segments have multiple distinct verb or argument labels for the same `(video_id, start_frame, end_frame)` tuple. `df_fg.py` **automatically filters** these ambiguous segments and reports how many were removed. The provided split files have already been filtered. Our released checkpoints were trained on splits that still included these ambiguous samples, but they represented a negligible fraction of the data; the provided files have considerable overlap with the splits we trained on.
 
 **Step 1 — Parse fine-grained annotations:**
 
@@ -396,16 +367,6 @@ python augment.py --split test
 ```
 
 For each split, reads `{split}_base.xlsx`, groups by `(V, ARG1)`, and generates balanced misalignment samples. Outputs `train.xlsx`, `validation.xlsx`, `test.xlsx`.
-
-**Step 4 — Extract frames:**
-
-```bash
-python extract_frames.py \
-  --input df_fg_output.xlsx \
-  --video_base_path /path/to/HoloAssist/video_pitch_shifted
-```
-
-See [Section 2.6](#26-holoassist).
 
 ## 📜 Citation
 
