@@ -18,6 +18,7 @@ semantic_attr/bash/
 semantic_attr/model/checkpoint_best.pt
 semantic_attr/results/
 semantic_attr/venv/
+semantic_attr/wandb
 
 # IDE
 .vscode/
