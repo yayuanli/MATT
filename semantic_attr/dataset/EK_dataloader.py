@@ -73,7 +73,6 @@ class EKDataset(Dataset):
 
         return frames_tensor
 
-
     def __init__(self, args, dataset_path):
         self.args = args
 

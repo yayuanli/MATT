@@ -1,4 +1,3 @@
-from dataset.A101_dataloader import A101Dataset
 from dataset.EgoPER_dataloader import EgoPERDataset
 from dataset.EK_dataloader import EKDataset
 from dataset.frames_dataloader import Ego4DDataset
@@ -44,7 +43,7 @@ def get_args_parser():
     parser.add_argument('--dataset',
                         type=str,
                         required=True,
-                        help='Dataset to train model on. Choose from "Ego4D", "EgoPER", "EK", "Assembly101", "HoloAssist"')
+                        help='Dataset to train model on. Choose from "ego4d", "egoper", "epic-kitchens", "holoassist"')
     parser.add_argument('--category',
                         default="",
                         type=str,
@@ -85,7 +84,7 @@ def get_args_parser():
                         default='./model/checkpoint_best.pt',
                         type=str,
                         help='Relative path to LaViLa checkpoint')
-    parser.add_argument('--pre_trained_ckpt',
+    parser.add_argument('--pretrained_ckpt',
                         type=str,
                         required=True,
                         help='Path to a .pth checkpoint whose model_state_dict is loaded before training. Specify "None" to train from randomly initialized task heads + LaViLa init only.')
@@ -137,7 +136,6 @@ def train_one_epoch(model: torch.nn.Module, train_dataloader, optimizer: torch.o
     print(f"Training epoch #{epoch}")
 
     for i, (frames, v, arg1, label_encoding) in enumerate(train_dataloader):
-
         frames = frames.to(device=f'cuda:{rank}')
         labels = label_encoding.to(device=f'cuda:{rank}')
 
@@ -495,9 +493,7 @@ def train_model(args, model, train_dataloader, valid_dataloader, test_dataloader
         test_size_per_process = math.ceil(args.test_size / world_size)
 
     for epoch in range(args.start_epoch, args.epochs):
-
         print(f"Starting epoch {epoch}")
-
         dist.barrier()
 
         train_sampler.set_epoch(epoch)
@@ -526,32 +522,39 @@ def train_model(args, model, train_dataloader, valid_dataloader, test_dataloader
         if test_dataloader:
             test_one_epoch(args, model, test_dataloader, test_size_per_process, epoch, rank)
 
+        # TODO: REMOVE COMMENTS AROUND THIS!
         if rank == 0: 
             if test_stats[0] >= best_v:
+                '''
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/verb_model.pth')
+                '''
                 best_v = test_stats[0]
 
             if test_stats[1] >= best_arg:
+                '''
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/arg_model.pth')
+                '''
                 best_arg = test_stats[1]
 
             if test_stats[2] >= best_video:
+                '''
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/video_model.pth')
+                '''
                 best_video = test_stats[2]
     
 def main(rank, world_size):
@@ -566,7 +569,7 @@ def main(rank, world_size):
 
     device = torch.device(f'cuda:{rank}')
 
-    if args.dataset == 'EgoPER':
+    if args.dataset == 'egoper':
         args.train_dataset_path = os.path.join(args.train_dataset_path, args.category, args.train_filename)
         args.valid_dataset_path = os.path.join(args.valid_dataset_path, args.category, "validation.xlsx")
 
@@ -584,7 +587,7 @@ def main(rank, world_size):
         else: 
             test_dataset = EgoPERDataset(args, args.test_dataset_path)
 
-    elif args.dataset == 'Ego4D':
+    elif args.dataset == 'ego4d':
         train_dataset = Ego4DDataset(args, args.train_dataset_path)
         valid_dataset = Ego4DDataset(args, args.valid_dataset_path)
         if args.test_dataset_path == "None": 
@@ -592,7 +595,7 @@ def main(rank, world_size):
         else:
             test_dataset = Ego4DDataset(args, args.test_dataset_path)
 
-    elif args.dataset == 'EK':
+    elif args.dataset == 'epic-kitchens':
         train_dataset = EKDataset(args, args.train_dataset_path)
         valid_dataset = EKDataset(args, args.valid_dataset_path)
         if args.test_dataset_path == "None": 
@@ -600,15 +603,7 @@ def main(rank, world_size):
         else:
             test_dataset = EKDataset(args, args.test_dataset_path)
 
-    elif args.dataset == 'Assembly101':
-        train_dataset = A101Dataset(args, args.train_dataset_path)
-        valid_dataset = A101Dataset(args, args.valid_dataset_path)
-        if args.test_dataset_path == "None": 
-            test_dataset = None
-        else:
-            test_dataset = A101Dataset(args, args.test_dataset_path)
-
-    elif args.dataset == 'HoloAssist':
+    elif args.dataset == 'holoassist':
         train_dataset = HADataset(args, args.train_dataset_path)
         valid_dataset = HADataset(args, args.valid_dataset_path)
         if args.test_dataset_path == "None": 
@@ -638,8 +633,8 @@ def main(rank, world_size):
 
     model = MultiModal_Transformer(args, rank).to(device=device)
 
-    if args.pre_trained_ckpt != 'None':
-        checkpoint = torch.load(args.pre_trained_ckpt, map_location=device)
+    if args.pretrained_ckpt != 'None':
+        checkpoint = torch.load(args.pretrained_ckpt, map_location=device)
         model.load_state_dict(checkpoint['model_state_dict'])
 
     try:
@@ -653,6 +648,7 @@ def main(rank, world_size):
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
 
+    
     train_model(args, ddp_model, train_dataloader, valid_dataloader, test_dataloader, train_sampler, valid_sampler, test_sampler, rank, world_size)
     cleanup_ddp()
 
