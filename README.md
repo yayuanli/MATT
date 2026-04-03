@@ -208,7 +208,15 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python training_ddp.py \
   --wandb_project <project_name>
 ```
 
-Set `--dataset` to `ego4d`, `egoper`, `epic-kitchens`, or `holoassist`. Use `--clip_length 8` for HoloAssist (default 30 works for all others). For Ego4D, use `--root2` / `--root3` if frames span multiple drives. For EgoPER, `--train_dataset_path` and `--valid_dataset_path` should point to the parent directory containing per-category folders, and `--category` selects the food category. Set `--pretrained_ckpt None` to train from scratch (LaViLa init only), or pass a `.pth` path to fine-tune from an existing checkpoint. Best checkpoints (`verb_model.pth`, `arg_model.pth`, `video_model.pth`) are saved to `--output_dir`. `CUDA_VISIBLE_DEVICES` controls which GPUs are used; the script determines `world_size` automatically.
+Key notes:
+
+- Set `--dataset` to `ego4d`, `egoper`, `epic-kitchens`, or `holoassist`.
+- Use `--clip_length 8` for HoloAssist (default 30 works for all others).
+- For Ego4D, use `--root2` / `--root3` if frames span multiple drives.
+- For EgoPER, `--train_dataset_path` and `--valid_dataset_path` point to the parent directory containing per-category folders, and `--category` selects the food category.
+- Set `--pretrained_ckpt None` to train from scratch (LaViLa init only), or pass a `.pth` path to fine-tune from an existing checkpoint.
+- Best checkpoints (`verb_model.pth`, `arg_model.pth`, `video_model.pth`) are saved to `--output_dir`.
+- `CUDA_VISIBLE_DEVICES` controls which GPUs are used; the script determines `world_size` automatically.
 
 ## 🔧 5. MisEngine Data Construction Pipeline
 
