@@ -232,7 +232,6 @@ class VideoCaptionDatasetBase(torch.utils.data.Dataset):
                         raise ValueError
                 return frames, narration
             elif len(self.samples[i]) == 5:
-                # TODO: need better filtering strategy based on nll
                 vid, start_second, end_second, narration, _ = self.samples[i]
                 frames = video_loader(self.root, vid, start_second,
                                       end_second=end_second,

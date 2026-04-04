@@ -23,9 +23,6 @@ def setup_ddp(rank, world_size):
 def cleanup_ddp():
     dist.destroy_process_group()
 
-# Root for EgoPER is /nfs/turbo/coe-jjcorso1/aaditj/EgoPER_dataset/EgoPER_frames/
-# Root for Assembly 101 is /nfs/turbo/coe-jjcorso1/aaditj/Assembly101/recordings/
-# Root for HoloAsssist is /nfs/turbo/coe-jjcorso1/aaditj/HoloAssist/video_pitch_shifted/
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Training', add_help=False)
     parser.add_argument('--root1',
@@ -53,7 +50,7 @@ def get_args_parser():
                         required=True,
                         help="For EgoPER: path to folder containing all categories' splits. For Ego4D/EK/HoloAssist: path to the train file itself.")
     parser.add_argument('--train_filename',
-                        default='alt_augment_training.xlsx',
+                        default='train.xlsx',
                         type=str,
                         help='Name of train file for EgoPER only, due to different categories')
     parser.add_argument('--valid_dataset_path',
@@ -93,7 +90,7 @@ def get_args_parser():
                         type=int,
                         help='Frames sampled per video clip for the visual backbone') # (used 30 for EgoPER/Ego4D/EK, 8 for HoloAssist)
     parser.add_argument('--global_batch_size',
-                        default=64,
+                        default=128,
                         type=int,
                         help='Total batch size summed over all GPUs (per-rank batch = global_batch_size / world_size)')
     parser.add_argument('--start_epoch',
@@ -515,47 +512,40 @@ def train_model(args, model, train_dataloader, valid_dataloader, test_dataloader
 
         dist.barrier()
 
-        test_stats = valid_one_epoch(args, model, valid_dataloader, valid_size_per_process, verb_metrics, arg_metrics, video_metrics, epoch, rank, loss)
+        valid_stats = valid_one_epoch(args, model, valid_dataloader, valid_size_per_process, verb_metrics, arg_metrics, video_metrics, epoch, rank, loss)
         
         dist.barrier()
 
         if test_dataloader:
             test_one_epoch(args, model, test_dataloader, test_size_per_process, epoch, rank)
 
-        # TODO: REMOVE COMMENTS AROUND THIS!
         if rank == 0: 
-            if test_stats[0] >= best_v:
-                '''
+            if valid_stats[0] >= best_v:
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/verb_model.pth')
-                '''
-                best_v = test_stats[0]
+                best_v = valid_stats[0]
 
-            if test_stats[1] >= best_arg:
-                '''
+            if valid_stats[1] >= best_arg:
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/arg_model.pth')
-                '''
-                best_arg = test_stats[1]
+                best_arg = valid_stats[1]
 
-            if test_stats[2] >= best_video:
-                '''
+            if valid_stats[2] >= best_video:
                 torch.save({ # Only save it if the f1 is better
                     'epoch': epoch,
                     'model_state_dict': model.module.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                     }, args.output_dir + '/video_model.pth')
-                '''
-                best_video = test_stats[2]
+                best_video = valid_stats[2]
     
 def main(rank, world_size):
 

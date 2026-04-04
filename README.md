@@ -21,9 +21,9 @@ We plan to release all components of our project according to the following sche
 - ✅ Paper release
 - ✅ Project page setup
 - ✅ Ego4D-M & EPIC-KITCHENS-M datasets
-- ⬜ MisFormer inference code & model weights
-- ⬜ MisFormer training scripts
-- ⬜ MisEngine data construction pipeline
+- ✅ MisFormer inference code & model weights
+- ✅ MisFormer training scripts
+- ✅ MisEngine data construction pipeline
 - ⬜ Baseline implementations
 
 ## 📝 1. Abstract
@@ -34,12 +34,12 @@ We introduce **Mistake Attribution (MATT)**, a new task for fine-grained underst
 
 > **Tested Environment**: CUDA 11.7, Ubuntu, Python 3.9
 
-### 2.1. MisFormer (`semantic_attr`)
+### 2.1. MisFormer (`misformer`)
 
 ```bash
 # Clone Repository
 git clone https://github.com/yayuanli/MATT.git
-cd MATT/semantic_attr
+cd MATT/misformer
 
 # Create Environment (Python 3.9 recommended)
 python -m venv venv
@@ -47,18 +47,20 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-The MisFormer visual backbone requires a pre-trained [LaViLa](https://github.com/facebookresearch/LaViLa) checkpoint. Place it at `semantic_attr/model/checkpoint_best.pt` (or pass a custom path via `--LaViLa_ckpt`).
+The MisFormer visual backbone requires a pre-trained [LaViLa](https://github.com/facebookresearch/LaViLa) checkpoint. Download the **LAVILA TSF-L Epoch 3** dual encoder (`clip_openai_timesformer_large.narrator_rephraser.ep_0003`) from the [LaViLa Model Zoo](https://github.com/facebookresearch/LaViLa/blob/main/docs/MODEL_ZOO.md#zero-shot) and place it at `misformer/model/checkpoint_best.pt` (or pass a custom path via `--LaViLa_ckpt`).
 
-### 2.2. MisEngine (`mis-engine`)
+### 2.2. MisEngine (`misengine`)
 
-> **Note:** The MisEngine data construction pipeline will be released in a future update. Once available:
+> **Note:** MisEngine requires **Python 3.9** due to AllenNLP's dependency stack (fails on 3.11+).
 
 ```bash
-cd MATT/mis-engine
+cd MATT/misengine
+
+# Create Environment (requires Python 3.9)
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
-
-`mis-engine` additionally depends on [AllenNLP](https://github.com/allenai/allennlp) (for EgoPER SRL processing). See `mis-engine/requirements.txt` for the full list.
 
 ### 2.3. Ego4D
 
@@ -75,9 +77,9 @@ Download instructions coming soon.
 Use the provided script to extract frames from all clips:
 
 ```bash
-cd mis-engine/ego4d
+cd misengine/ego4d
 
-# Edit clips_dir and output_directory in the script, then run after changing the paths to the clip and output directory.
+# Note: Edit clips_dir and output_directory in the script
 python extract_frames.py
 ```
 
@@ -92,7 +94,7 @@ Download instructions coming soon.
 **Frame Extraction:** Use the provided script to extract frames at 15 fps from the EgoPER videos:
 
 ```bash
-cd mis-engine/egoper
+cd misengine/egoper
 
 python extract_frames.py \
   --input annotation.xlsx \
@@ -114,8 +116,6 @@ Download instructions coming soon.
 ...
 ```
 
-Frame filenames use 10-digit zero-padded numbering (`frame_%010d.jpg`).
-
 ### 2.6. HoloAssist
 
 Download the following from the [HoloAssist project page](https://holoassist.github.io/):
@@ -126,12 +126,10 @@ Download the following from the [HoloAssist project page](https://holoassist.git
 | Labels | [data-annotation-trainval-v1_1.json](https://hl2data.z5.web.core.windows.net/holoassist-data-release/data-annotation-trainval-v1_1.json) | 111 MB |
 | Dataset splits | [data-splits-v1_2.zip](https://holoassist.github.io/label_files/data-splits-v1_2.zip) | — |
 
-An [alternative download site](https://www.research-collection.ethz.ch/handle/20.500.11850/683960) is also available.
-
-**Frame Extraction:** First, run `df_fg.py` to generate the annotation spreadsheet (see [Section 5.4](#54-holoassist)), then extract frames at per-video FPS:
+**Frame Extraction:**
 
 ```bash
-cd mis-engine/holoassist
+cd misengine/holoassist
 
 python extract_frames.py \
   --input df_fg_output.xlsx \
@@ -147,7 +145,7 @@ Frames are written to `<video_dir>/Export_py/video_frames/frame_00001.jpg` (5-di
 Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`). See the script's `argparse` for the full list of options.
 
 ```bash
-cd semantic_attr
+cd misformer
 export PYTHONPATH=$(pwd):$PYTHONPATH
 
 python eval_model.py \
@@ -157,14 +155,18 @@ python eval_model.py \
   --clip_length <num_frames>
 ```
 
-Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`. Use `--clip_length 30` for Ego4D / EPIC-Kitchens and `--clip_length 8` for HoloAssist. For Ego4D, `--root2` and `--root3` can specify additional frame directories if frames are spread across multiple drives. Results are written to `results/<dataset>/`.
+Key notes:
+
+- Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`.
+- Use `--clip_length 30` for Ego4D / EPIC-Kitchens and `--clip_length 8` for HoloAssist.
+- For Ego4D, `--root2` and `--root3` can specify additional frame directories if frames span multiple drives.
 
 ### 3.2. EgoPER
 
 EgoPER uses a separate evaluation script (`eval_egoper.py`) because its models are fine-tuned from a pretrained Ego4D or EPIC-Kitchens checkpoint, and evaluation is done per food category. Checkpoints are **automatically downloaded** from Hugging Face (`mistakeattribution/egoper-finetuned-from-<pretrain>`). See the script's `argparse` for the full list of options.
 
 ```bash
-cd semantic_attr
+cd misformer
 export PYTHONPATH=$(pwd):$PYTHONPATH
 
 python eval_egoper.py \
@@ -174,7 +176,11 @@ python eval_egoper.py \
   --test_dataset_path /path/to/EgoPER_splits
 ```
 
-Set `--pretrain` to `ego4d` or `epic-kitchens` depending on which pretrained base was used. Set `--category` to a specific food (`coffee`, `oatmeal`, `pinwheels`, `quesadilla`, `tea`) or `all`. The `--test_dataset_path` should point to the parent directory containing per-category folders (each with a `test.xlsx`). Results are written to `results/egoper/`.
+Key notes:
+
+- Set `--pretrain` to `ego4d` or `epic-kitchens` depending on which pretrained base was used.
+- Set `--category` to a specific food (`coffee`, `oatmeal`, `pinwheels`, `quesadilla`, `tea`) or `all`.
+- `--test_dataset_path` should point to the parent directory containing per-category folders (each with a `test.xlsx`).
 
 ## 📊 4. Model Training
 
@@ -189,15 +195,15 @@ wandb login         # paste your API key when prompted
 
 ### 4.2. Running Training
 
-See `training_ddp.py`'s `argparse` for the full list of options.
+See `training.py`'s `argparse` for the full list of options.
 
 ```bash
-cd semantic_attr
+cd misformer
 export PYTHONPATH=$(pwd):$PYTHONPATH
 export MASTER_ADDR="127.0.0.1"
 export MASTER_PORT=12355
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 python training_ddp.py \
+CUDA_VISIBLE_DEVICES=0,1,2,3 python training.py \
   --dataset <dataset_name> \
   --root1 /path/to/frames \
   --train_dataset_path /path/to/train.xlsx \
@@ -214,9 +220,6 @@ Key notes:
 - Use `--clip_length 8` for HoloAssist (default 30 works for all others).
 - For Ego4D, use `--root2` / `--root3` if frames span multiple drives.
 - For EgoPER, `--train_dataset_path` and `--valid_dataset_path` point to the parent directory containing per-category folders, and `--category` selects the food category.
-- Set `--pretrained_ckpt None` to train from scratch (LaViLa init only), or pass a `.pth` path to fine-tune from an existing checkpoint.
-- Best checkpoints (`verb_model.pth`, `arg_model.pth`, `video_model.pth`) are saved to `--output_dir`.
-- `CUDA_VISIBLE_DEVICES` controls which GPUs are used; the script determines `world_size` automatically.
 
 ## 🔧 5. MisEngine Data Construction Pipeline
 
@@ -233,14 +236,14 @@ All augmentation scripts produce samples with four label classes:
 
 ### 5.1. Ego4D
 
-The Ego4D pipeline maps narration-level annotations to clip-level frame coordinates and then generates misalignment samples.
+The Ego4D pipeline maps video-level annotations to clip-level frame coordinates and then generates misalignment samples.
 
-> **Note on ambiguous samples:** The original Ego4D annotations contain "ambiguous" segments — video segments where the same `(video_uid, start_frame, end_frame)` tuple is associated with multiple distinct verb or argument labels. These accounted for ___% of the data used in our training/inference splits. The provided parquet and split files have been **pre-filtered** to remove these ambiguous segments. Note that the provided splits have considerable overlap with, but are not identical to, the splits used to train our released checkpoints. If you are starting from a raw parquet export, uncomment the filtering block in `clips.py` to perform this removal yourself.
+> **Note on ambiguous samples:** The original Ego4D annotations contain video segments, defined by `(video_uid, start_frame, end_frame)`, that are associated with multiple distinct verb or argument labels. These accounted for a small percentage of the data used in our training/inference splits. The provided parquet and split files have been **pre-filtered** to remove these ambiguous video segments. Note that the provided splits have considerable overlap with, but are not identical to, the splits used to train our released checkpoints.
 
 **Step 1 — Map to clip coordinates:**
 
 ```bash
-cd mis-engine/ego4d
+cd misengine/ego4d
 
 python clips.py \
   --metadata /path/to/ego4d.json \
@@ -279,7 +282,7 @@ The EgoPER pipeline parses recipe annotations, runs Semantic Role Labeling (SRL)
 **Step 1 — Parse annotations:**
 
 ```bash
-cd mis-engine/egoper
+cd misengine/egoper
 
 python annotation.py \
   --json_path /path/to/EgoPER/annotation.json \
@@ -325,7 +328,7 @@ Combines per-food validation and test splits into `all/validation.xlsx` and `all
 EPIC-Kitchens uses a single augmentation script that reads directly from the [official EPIC-Kitchens-100 annotations](https://github.com/epic-kitchens/epic-kitchens-100-annotations).
 
 ```bash
-cd mis-engine/epickitchens
+cd misengine/epickitchens
 
 python augment.py \
   --split train \
@@ -339,12 +342,12 @@ Reads `EPIC_100_{split}.csv`, renames columns to match the MisFormer schema (`ve
 
 The HoloAssist pipeline extracts fine-grained action annotations from the official JSON, splits by video ID, and generates misalignment samples.
 
-> **Note on ambiguous samples:** Like Ego4D, some HoloAssist annotation segments have multiple distinct verb or argument labels for the same `(video_id, start_frame, end_frame)` tuple. `df_fg.py` **automatically filters** these ambiguous segments and reports how many were removed. The provided split files have already been filtered. Our released checkpoints were trained on splits that still included these ambiguous samples, but they represented a negligible fraction of the data; the provided files have considerable overlap with the splits we trained on.
+> **Note on ambiguous samples:** Like Ego4D, some HoloAssist segments have multiple distinct verb or argument labels for the same `(video_id, start_frame, end_frame)` tuple. `df_fg.py` **automatically filters** these ambiguous segments and reports how many were removed. The provided split files have already been filtered. Our released checkpoints were trained on splits that still included these ambiguous samples, but they represented a negligible fraction of the data; the provided files have considerable overlap with the splits we trained on.
 
 **Step 1 — Parse fine-grained annotations:**
 
 ```bash
-cd mis-engine/holoassist
+cd misengine/holoassist
 
 python df_fg.py \
   --json_path /path/to/data-annotation-trainval-v1_1.json \

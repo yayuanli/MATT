@@ -12,13 +12,18 @@ __pycache__/
 dataset_raw/
 working_journal/
 src/
+wandb/
 
-# Files in semantic_attr
-semantic_attr/bash/
-semantic_attr/model/checkpoint_best.pt
-semantic_attr/results/
-semantic_attr/venv/
-semantic_attr/wandb
+# Files in misengine
+misengine/venv
+
+# Files in misformer
+misformer/bash/
+misformer/model/checkpoint_best.pt
+misformer/results/
+misformer/venv/
+misformer/wandb
+misformer/EK_train*
 
 # IDE
 .vscode/

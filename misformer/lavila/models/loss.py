@@ -242,13 +242,6 @@ class CaptionLoss(nn.Module):
                 total += nopad.sum()
                 ppl = torch.exp(loss[i].sum() / nopad.sum())
                 ppls.append(ppl)
-                # TODO: for debug only
-                # sep_pos = labels[i].tolist().index(self.tokenizer.tokenizer.sep_token_id)
-                # if self.tokenizer is not None:
-                #     print('{} {} {}'.format(
-                #         i, self.tokenizer.tokenizer.convert_ids_to_tokens(pred[:sep_pos]),
-                #         self.tokenizer.tokenizer.convert_ids_to_tokens(labels[i, :sep_pos]),
-                #     ))
             acc = 100 * correct / (total + 1e-8)
         return {'loss': loss.mean(), 'caption_loss': loss.mean(), 'caption_acc': acc, 'ppl': torch.tensor(ppls).mean()}
 

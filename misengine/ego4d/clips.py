@@ -37,10 +37,7 @@ for video_uid in lookup_table:
 df = pd.read_excel(args.input)
 df[['start_frame', 'end_frame']] = df[['start_frame', 'end_frame']].astype(int)
 
-'''
-NOTE: Not needed if the provided parquet.xlsx has already been filtered.
-Uncomment if starting from a raw parquet export.
-
+# NOTE: Not needed if the provided parquet.xlsx has already been filtered.
 keys = ["video_uid", "start_frame", "end_frame"]
 ambiguous_keys = (
     df.groupby(keys)
@@ -59,7 +56,6 @@ if len(ambiguous_keys) > 0:
 
 # Remove the mialignment columns because the row numbers no longer correspond to the same entry
 df = df.drop(columns=["MisalignSRL_V", "MisalignSRL_ARG1", "MisalignSRL_V_ARG1"], errors="ignore")
-'''
 
 df['clip1_uid'] = 'Not found'
 df['clip1_start_frame'] = -1

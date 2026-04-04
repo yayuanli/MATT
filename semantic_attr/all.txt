@@ -1,6 +1,0 @@
-Epoch: 0 
-Loss during training: 0.6647413969039917 
-Verb: Accuracy: 0.5723684430122375, Precision: 0.0, Recall: 0.0, F1: 0.0 
-Arg: Accuracy: 0.5197368264198303, Precision: 0.0, Recall: 0.0, F1: 0.0 
-Video: Accuracy: 0.3486842215061188, Precision: 0.0, Recall: 0.0, F1: 0.0 
-

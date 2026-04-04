@@ -77,20 +77,6 @@ class HADataset(Dataset):
         self.label_mapping = None
         self.samples = pd.read_excel(dataset_path)
 
-        # TODO: GET RID OF THIS:
-        valid_indices = []
-        for i in range(len(self.samples)):
-            row = self.samples.iloc[i]
-            video_id = row["video_id"]
-            frames_dir = os.path.join(self.args.root1, str(video_id), "Export_py", "video_frames")
-
-            if os.path.exists(frames_dir):
-                valid_indices.append(i)
-            else:
-                print(f"Skipping missing video in init: {video_id}")
-
-        self.samples = self.samples.iloc[valid_indices].reset_index(drop=True)
-
     def __getitem__(self, index):
         row = self.samples.iloc[index]
 
