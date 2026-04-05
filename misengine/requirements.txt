@@ -1,0 +1,6 @@
+pandas
+openpyxl
+numpy
+torch
+allennlp
+allennlp-models
