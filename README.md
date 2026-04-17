@@ -63,7 +63,7 @@ The MisFormer visual backbone requires a pre-trained [LaViLa](https://github.com
 ### 2.3. Ego4D
 > You don't need to go throught this section if you just want to learn the MisEngine process.
 
-Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/ego4d/dat/`. It'd be ~1TB so consider downloading them to a different storage and make link (`ln`).
+Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/ego4d/dat/`.
 
 Expect folder structure
 ```
