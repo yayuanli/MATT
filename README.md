@@ -33,8 +33,19 @@ We introduce **Mistake Attribution (MATT)**, a new task for fine-grained underst
 ## 🛠️ 2. Environment Setup
 
 > **Tested Environment**: CUDA 11.7, Ubuntu, Python 3.9
+### 2.12. MisEngine (`misengine`)
 
-### 2.1. MisFormer (`misformer`)
+> **Note:** MisEngine requires **Python 3.9** due to AllenNLP's dependency stack (fails on 3.11+).
+
+```bash
+cd MATT/misengine
+
+# Create Environment (requires Python 3.9)
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+### 2.2. MisFormer (`misformer`)
 
 ```bash
 # Clone Repository
@@ -49,21 +60,9 @@ pip install -r requirements.txt
 
 The MisFormer visual backbone requires a pre-trained [LaViLa](https://github.com/facebookresearch/LaViLa) checkpoint. Download the **LAVILA TSF-L Epoch 3** dual encoder (`clip_openai_timesformer_large.narrator_rephraser.ep_0003`) from the [LaViLa Model Zoo](https://github.com/facebookresearch/LaViLa/blob/main/docs/MODEL_ZOO.md#zero-shot) and place it at `misformer/model/checkpoint_best.pt` (or pass a custom path via `--LaViLa_ckpt`).
 
-### 2.2. MisEngine (`misengine`)
-
-> **Note:** MisEngine requires **Python 3.9** due to AllenNLP's dependency stack (fails on 3.11+).
-
-```bash
-cd MATT/misengine
-
-# Create Environment (requires Python 3.9)
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 ### 2.3. Ego4D
 > You don't need to go throught this section if you just want to learn the MisEngine process.
+
 Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/ego4d/dat/`. It'd be ~1TB so consider downloading them to a different storage and make link (`ln`).
 
 Expect folder structure
@@ -114,6 +113,7 @@ This scans `clips_dir` for all `.mp4` files and extracts frames at 640×360 reso
 
 ### 2.4. EPIC-Kitchens
 > You don't need to go throught this section if you just want to learn the MisEngine process.
+
 Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/epickitchens/dat/`. It'd be ~1TB so consider downloading them to a different storage and make link (`ln`).
 
 **Frame Extraction:** The dataloader expects the standard EPIC-Kitchens frame layout:
@@ -126,6 +126,7 @@ misengine/epickitchens/dat/frames/<participant_id>/rgb_frames/<video_id>/frame_0
 
 ### 2.5. HoloAssist 
 > You don't need to go throught this section if you just want to learn the MisEngine process.
+
 Although not reported in the paper, we also support the HoloAssist dataset.
 
 Download the following from the [HoloAssist project page](https://holoassist.github.io/):
@@ -150,6 +151,7 @@ Frames are written to `<video_dir>/Export_py/video_frames/frame_00001.jpg` (5-di
 
 ## 🔧 3. MisEngine Data Construction Pipeline
 > You don't need to go throught this section if you just want to inference/train MisFormer model since you have downloaded the constrcuted data in the Environment Setup section.
+
 In this repo, we apply MisEngine to the Ego4D, EPIC-Kitchens, and HoloAssist datasets by programmatically generating semantic-role misalignment samples from existing egocentric video annotations. 
 
 **The methodology can be applied to any other dataset that follows the required structure (i.e., most action recognition, video captioning dataset). For datasets that do not originally have semantic roles labels, we recommand [AllenNLP SRL](https://docs.allennlp.org/models/main/models/structured_prediction/predictors/srl/).**
