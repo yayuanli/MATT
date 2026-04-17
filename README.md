@@ -267,6 +267,11 @@ For each split, reads `{split}_base.xlsx`, groups by `(V, ARG1)`, and generates 
 
 Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`). See `python eval_model.py -h` for the full list of options.
 
+In case you want to downlaod the model weights by yourself:
+- For `ego4d`: https://huggingface.co/mistakeattribution/ego4d
+- For `epickitchens`: https://huggingface.co/mistakeattribution/epic-kitchens
+- For `holoassit`: https://huggingface.co/mistakeattribution/holoassist
+
 ```bash
 cd misformer
 export PYTHONPATH=$(pwd):$PYTHONPATH
