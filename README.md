@@ -341,3 +341,28 @@ If you find this work useful in your research, please cite:
   year      = {2026},
 }
 ```
+
+Please also cite the source datasets that enables this work:
+
+```bibtex
+@inproceedings{grauman2022ego4d,
+  title     = {Ego4D: Around the World in 3,000 Hours of Egocentric Video},
+  author    = {Grauman, Kristen and others},
+  booktitle = {CVPR},
+  year      = {2022}
+}
+
+@article{Damen2022RESCALING,
+  title     = {Rescaling Egocentric Vision: Collection, Pipeline and Challenges for EPIC-KITCHENS-100},
+  author    = {Damen, Dima and others},
+  journal   = {IJCV},
+  year      = {2022}
+}
+
+@inproceedings{wang2023holoassist,
+  title     = {HoloAssist: an Egocentric Human Interaction Dataset for Interactive AI Assistants in the Real World},
+  author    = {Wang, Xin and others},
+  booktitle = {ICCV},
+  year      = {2023}
+}
+```
