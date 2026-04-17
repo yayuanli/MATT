@@ -20,7 +20,7 @@ We plan to release all components of our project according to the following sche
 
 - ✅ Paper release
 - ✅ Project page setup
-- ✅ Ego4D-M & EPIC-KITCHENS-M datasets
+- ✅ datasets release
 - ✅ MisFormer inference code & model weights
 - ✅ MisFormer training scripts
 - ✅ MisEngine data construction pipeline
@@ -42,8 +42,8 @@ git clone https://github.com/yayuanli/MATT.git
 cd MATT/misformer
 
 # Create Environment (Python 3.9 recommended)
-python -m venv venv
-source venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -63,60 +63,70 @@ pip install -r requirements.txt
 ```
 
 ### 2.3. Ego4D
+> You don't need to go throught this section if you just want to learn the MisEngine process.
+Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/ego4d/dat/`. It'd be ~1TB so consider downloading them to a different storage and make link (`ln`).
 
-Download instructions coming soon.
+Expect folder structure
+```
+misengine/ego4d/dat/
+├── clips
+│   ├── <clip1_uid>.mp4 
+│   ├── <clip2_uid>.mp4 
+│   ├── ... 
+│   ├── manifest.csv 
+│   ├── manifest.ver 
+├── parquet.xlsx
+├── test.xlsx
+├── train.xlsx
+├── valid.xlsx
+```
 
-**Frame Extraction:** Ego4D videos are distributed as clips (`.mp4`). The dataloader expects pre-extracted frames in the following structure:
+**Frame Extraction:** The dataloader expects extracted frames (~6TB) in the following structure.
 
 ```
-<frames_dir>/<clip_uid>_frames/00001.png
-<frames_dir>/<clip_uid>_frames/00002.png
-...
+misengine/ego4d/dat/
+├── clips_frames
+│   ├── <clip1_uid>_frames
+│   │   ├── 00001.png
+│   │   ├── ...
+│   ├── <clip2_uid>_frames
+│   │   ├── 00001.png
+│   │   ├── ... 
+│   ├── manifest.csv 
+│   ├── manifest.ver 
+├── parquet.xlsx
+├── test.xlsx
+├── train.xlsx
+├── valid.xlsx
 ```
 
 Use the provided script to extract frames from all clips:
+> **Note:** Consider modifing the `output_directory` path in the script to a large storage and make link to `clips_frames` in current folder. Or, one could conceptually split clips into subsets and put each subset in different large storage. The dataloader accepts up to three root paths via `--root1`, `--root2`, and `--root3` and searches across all of them, so there could be upto 3 storage subsets.  
 
 ```bash
 cd misengine/ego4d
 
-# Note: Edit clips_dir and output_directory in the script
 python extract_frames.py
 ```
 
 This scans `clips_dir` for all `.mp4` files and extracts frames at 640×360 resolution using `ffmpeg`.
 
-> **Note:** Ego4D frame directories can span multiple storage locations. The dataloader accepts up to three root paths via `--root1`, `--root2`, and `--root3` and searches across all of them.
 
-### 2.4. EgoPER
+### 2.4. EPIC-Kitchens
+> You don't need to go throught this section if you just want to learn the MisEngine process.
+Follow [MATT-Bench @ Hugging Face](https://huggingface.co/datasets/mistakeattribution/MATT-Bench) to download dataset and annotations to `misengine/epickitchens/dat/`. It'd be ~1TB so consider downloading them to a different storage and make link (`ln`).
 
-Download instructions coming soon.
-
-**Frame Extraction:** Use the provided script to extract frames at 15 fps from the EgoPER videos:
-
-```bash
-cd misengine/egoper
-
-python extract_frames.py \
-  --input annotation.xlsx \
-  --egoper_dir /path/to/EgoPER \
-  --output_dir /path/to/EgoPER_frames
-```
-
-The resulting frames are stored as `<output_dir>/<video_id>_frames/000001.png` (6-digit zero-padded).
-
-### 2.5. EPIC-Kitchens
-
-Download instructions coming soon.
-
-**Frame Extraction:** EPIC-Kitchens-100 provides official RGB frame download scripts via their [GitHub repository](https://github.com/epic-kitchens/epic-kitchens-download-scripts). The dataloader expects the standard EPIC-Kitchens frame layout:
+**Frame Extraction:** The dataloader expects the standard EPIC-Kitchens frame layout:
 
 ```
-<frames_dir>/<participant_id>/rgb_frames/<video_id>/frame_0000000001.jpg
-<frames_dir>/<participant_id>/rgb_frames/<video_id>/frame_0000000002.jpg
+misengine/epickitchens/dat/frames/<participant_id>/rgb_frames/<video_id>/frame_0000000001.jpg
+misengine/epickitchens/dat/frames/<participant_id>/rgb_frames/<video_id>/frame_0000000002.jpg
 ...
 ```
 
-### 2.6. HoloAssist
+### 2.5. HoloAssist 
+> You don't need to go throught this section if you just want to learn the MisEngine process.
+Although not reported in the paper, we also support the HoloAssist dataset.
 
 Download the following from the [HoloAssist project page](https://holoassist.github.io/):
 
@@ -138,103 +148,22 @@ python extract_frames.py \
 
 Frames are written to `<video_dir>/Export_py/video_frames/frame_00001.jpg` (5-digit zero-padded) within each video's directory.
 
-## 🚀 3. Evaluation & Inference
+## 🔧 3. MisEngine Data Construction Pipeline
+> You don't need to go throught this section if you just want to inference/train MisFormer model since you have downloaded the constrcuted data in the Environment Setup section.
+In this repo, we apply MisEngine to the Ego4D, EPIC-Kitchens, and HoloAssist datasets by programmatically generating semantic-role misalignment samples from existing egocentric video annotations. 
 
-### 3.1. Ego4D, EPIC-Kitchens, HoloAssist
-
-Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`). See the script's `argparse` for the full list of options.
-
-```bash
-cd misformer
-export PYTHONPATH=$(pwd):$PYTHONPATH
-
-python eval_model.py \
-  --dataset <dataset_name> \
-  --root1 /path/to/frames \
-  --test_dataset_path /path/to/test.xlsx \
-  --clip_length <num_frames>
-```
-
-Key notes:
-
-- Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`.
-- Use `--clip_length 30` for Ego4D / EPIC-Kitchens and `--clip_length 8` for HoloAssist.
-- For Ego4D, `--root2` and `--root3` can specify additional frame directories if frames span multiple drives.
-
-### 3.2. EgoPER
-
-EgoPER uses a separate evaluation script (`eval_egoper.py`) because its models are fine-tuned from a pretrained Ego4D or EPIC-Kitchens checkpoint, and evaluation is done per food category. Checkpoints are **automatically downloaded** from Hugging Face (`mistakeattribution/egoper-finetuned-from-<pretrain>`). See the script's `argparse` for the full list of options.
-
-```bash
-cd misformer
-export PYTHONPATH=$(pwd):$PYTHONPATH
-
-python eval_egoper.py \
-  --root1 /path/to/EgoPER_frames \
-  --category <food_category> \
-  --pretrain <pretrain_dataset> \
-  --test_dataset_path /path/to/EgoPER_splits
-```
-
-Key notes:
-
-- Set `--pretrain` to `ego4d` or `epic-kitchens` depending on which pretrained base was used.
-- Set `--category` to a specific food (`coffee`, `oatmeal`, `pinwheels`, `quesadilla`, `tea`) or `all`.
-- `--test_dataset_path` should point to the parent directory containing per-category folders (each with a `test.xlsx`).
-
-## 📊 4. Model Training
-
-Training uses Distributed Data Parallel (DDP) and requires **at least 2 GPUs**. Experiment logging is handled by [Weights & Biases](https://wandb.ai/).
-
-### 4.1. Weights & Biases Setup
-
-```bash
-pip install wandb   # included in requirements.txt
-wandb login         # paste your API key when prompted
-```
-
-### 4.2. Running Training
-
-See `training.py`'s `argparse` for the full list of options.
-
-```bash
-cd misformer
-export PYTHONPATH=$(pwd):$PYTHONPATH
-export MASTER_ADDR="127.0.0.1"
-export MASTER_PORT=12355
-
-CUDA_VISIBLE_DEVICES=0,1,2,3 python training.py \
-  --dataset <dataset_name> \
-  --root1 /path/to/frames \
-  --train_dataset_path /path/to/train.xlsx \
-  --valid_dataset_path /path/to/valid.xlsx \
-  --output_dir /path/to/checkpoints \
-  --recording_epochs /path/to/log.txt \
-  --pretrained_ckpt None \
-  --wandb_project <project_name>
-```
-
-Key notes:
-
-- Set `--dataset` to `ego4d`, `egoper`, `epic-kitchens`, or `holoassist`.
-- Use `--clip_length 8` for HoloAssist (default 30 works for all others).
-- For Ego4D, use `--root2` / `--root3` if frames span multiple drives.
-- For EgoPER, `--train_dataset_path` and `--valid_dataset_path` point to the parent directory containing per-category folders, and `--category` selects the food category.
-
-## 🔧 5. MisEngine Data Construction Pipeline
-
-MisEngine augments the Ego4D, EgoPER, EPIC-Kitchens, and HoloAssist datasets by programmatically generating semantic-role misalignment samples from existing egocentric video annotations. The method can be applied to any other dataset that follows the required structure.
+**The methodology can be applied to any other dataset that follows the required structure (i.e., most action recognition, video captioning dataset). For datasets that do not originally have semantic roles labels, we recommand [AllenNLP SRL](https://docs.allennlp.org/models/main/models/structured_prediction/predictors/srl/).**
 
 All augmentation scripts produce samples with four label classes:
 
-| Label | Meaning |
-|-------|---------|
-| 0 | Aligned (no misalignment) |
-| 1 | Verb misaligned |
-| 2 | Argument misaligned |
-| 3 | Both verb and argument misaligned |
+| Label | Meaning                           |
+|-------|-----------------------------------|
+| 0     | Aligned (no misalignment)         |
+| 1     | Verb misaligned                   |
+| 2     | Argument misaligned               |
+| 3     | Both verb and argument misaligned |
 
-### 5.1. Ego4D
+### 3.1. Ego4D
 
 The Ego4D pipeline maps video-level annotations to clip-level frame coordinates and then generates misalignment samples.
 
@@ -275,55 +204,7 @@ python create_splits.py \
 
 Randomly shuffles and splits into 80/10/10 train/valid/test. Outputs `train.xlsx`, `valid.xlsx`, `test.xlsx`.
 
-### 5.2. EgoPER
-
-The EgoPER pipeline parses recipe annotations, runs Semantic Role Labeling (SRL) to extract verb/argument pairs, and produces per-food-category splits.
-
-**Step 1 — Parse annotations:**
-
-```bash
-cd misengine/egoper
-
-python annotation.py \
-  --json_path /path/to/EgoPER/annotation.json \
-  --output annotation.xlsx
-```
-
-Converts the raw EgoPER `annotation.json` into a flat spreadsheet with decoded action strings and action types.
-
-**Step 2 — Run SRL and create per-food splits:**
-
-```bash
-python construct_sets.py \
-  --input annotation.xlsx \
-  --egoper_dir /path/to/EgoPER \
-  --output_dir /path/to/EgoPER_processing \
-  --device cuda:0
-```
-
-Runs AllenNLP SRL on action and error-description sentences to extract `V` (verb) and `ARG1` (argument) roles, computes misalignment labels by comparing action vs. error roles, and writes per-food-category split files (`training.xlsx`, `validation.xlsx`, `test.xlsx`) to `<output_dir>/<food>/`.
-
-**Step 3 — Build augmented training set:**
-
-```bash
-python augment.py \
-  --input_dir /path/to/EgoPER_processing \
-  --output all/train.xlsx
-```
-
-Concatenates all five food categories' training splits, generates balanced misalignment samples from normal-action rows, and outputs the combined training file.
-
-**Step 4 — Concatenate validation and test sets:**
-
-```bash
-python concatenate.py \
-  --input_dir /path/to/EgoPER_processing \
-  --output_dir all
-```
-
-Combines per-food validation and test splits into `all/validation.xlsx` and `all/test.xlsx`.
-
-### 5.3. EPIC-Kitchens
+### 3.2. EPIC-Kitchens
 
 EPIC-Kitchens uses a single augmentation script that reads directly from the [official EPIC-Kitchens-100 annotations](https://github.com/epic-kitchens/epic-kitchens-100-annotations).
 
@@ -338,7 +219,7 @@ python augment.py \
 
 Reads `EPIC_100_{split}.csv`, renames columns to match the MisFormer schema (`verb` → `V`, `noun` → `ARG1`, `stop_frame` → `end_frame`), groups by `(V, ARG1)`, and generates balanced misalignment samples. Repeat for `validation` and `test` splits.
 
-### 5.4. HoloAssist
+### 3.3. HoloAssist
 
 The HoloAssist pipeline extracts fine-grained action annotations from the official JSON, splits by video ID, and generates misalignment samples.
 
@@ -378,6 +259,68 @@ python augment.py --split test
 ```
 
 For each split, reads `{split}_base.xlsx`, groups by `(V, ARG1)`, and generates balanced misalignment samples. Outputs `train.xlsx`, `validation.xlsx`, `test.xlsx`.
+
+
+## 🚀 4. Evaluation & Inference
+
+Evaluation is run via `eval_model.py`, which **automatically downloads** the appropriate model checkpoints from Hugging Face (`mistakeattribution/<dataset>`). See `python eval_model.py -h` for the full list of options.
+
+```bash
+cd misformer
+export PYTHONPATH=$(pwd):$PYTHONPATH
+
+python eval_model.py \
+  --dataset <dataset_name> \
+  --root1 /path/to/frames \
+  --test_dataset_path /path/to/test.xlsx \ \
+  --clip_length <num_frames>
+```
+
+Key notes:
+
+- Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`.
+- Use `--clip_length 30` for Ego4D / EPIC-Kitchens and `--clip_length 8` for HoloAssist.
+- For Ego4D, `--root2` and `--root3` can specify additional frame directories if frames span multiple drives.
+- `--test_dataset_path` is in downloaded dataset annotations (e.g., `misengine/ego4d/dat/test.xlsx`)
+
+## 📊 5. Model Training
+
+Training uses Distributed Data Parallel (DDP) and requires **at least 2 GPUs**. Experiment logging is handled by [Weights & Biases](https://wandb.ai/).
+
+### 5.1. Weights & Biases Setup
+
+```bash
+pip install wandb   # included in requirements.txt
+wandb login         # paste your API key when prompted
+```
+
+### 5.2. Running Training
+
+See `python training.py -h` for the full list of options.
+
+```bash
+cd misformer
+export PYTHONPATH=$(pwd):$PYTHONPATH
+export MASTER_ADDR="127.0.0.1"
+export MASTER_PORT=12355
+
+CUDA_VISIBLE_DEVICES=0,1,2,3 python training.py \
+  --dataset <dataset_name> \
+  --root1 /path/to/frames \
+  --train_dataset_path /path/to/train.xlsx \
+  --valid_dataset_path /path/to/valid.xlsx \
+  --output_dir /path/to/checkpoints \
+  --recording_epochs /path/to/log.txt \
+  --pretrained_ckpt None \
+  --wandb_project <project_name>
+```
+
+Key notes:
+
+- Set `--dataset` to `ego4d`, `epic-kitchens`, or `holoassist`.
+- Use `--clip_length 8` for HoloAssist (default 30 works for all others).
+- For Ego4D, use `--root2` / `--root3` if frames span multiple drives.
+
 
 ## 📜 Citation
 

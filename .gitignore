@@ -16,6 +16,7 @@ wandb/
 
 # Files in misengine
 misengine/venv
+misengine/.venv
 
 # Files in misformer
 misformer/bash/
@@ -24,6 +25,7 @@ misformer/results/
 misformer/venv/
 misformer/wandb
 misformer/EK_train*
+misformer/.venv/
 
 # IDE
 .vscode/

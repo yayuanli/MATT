@@ -1,8 +1,8 @@
 import subprocess
 import os
 
-clips_dir = "/scratch1/home/yayuanli/dat/Ego4D/v2/v2/clips"
-output_directory = "/scratch1/home/aaditj/clips_frames"
+clips_dir = "dat/clips"
+output_directory = "dat/clips_frames"
 
 clips = [f.replace('.mp4', '') for f in os.listdir(clips_dir) if f.endswith('.mp4')]
 
