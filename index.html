@@ -8,8 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos</title>
 
-  <!-- TODO: Replace with your Google Analytics ID, or remove -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=TODO_GA_ID"></script> -->
+  <meta property="og:title" content="Mistake Attribution: Fine-Grained Mistake Understanding in Egocentric Videos">
+  <meta property="og:description" content="CVPR 2026. MATT attributes a mistake to what role was violated, when it became irreversible, and where it appears in the frame.">
+  <meta property="og:image" content="https://yayuanli.github.io/MATT/static/images/teaser.png">
+  <meta property="og:url" content="https://yayuanli.github.io/MATT/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
@@ -82,9 +86,44 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2511.20525" class="external-link button is-normal is-rounded is-dark">
+                <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Li_Mistake_Attribution_Fine-Grained_Mistake_Understanding_in_Egocentric_Videos_CVPR_2026_paper.html"
+                   class="external-link button is-normal is-rounded is-dark">
                   <span class="icon"><i class="fas fa-file-pdf"></i></span>
-                  <span>Paper</span>
+                  <span>Paper (CVF)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2511.20525" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://openaccess.thecvf.com/content/CVPR2026/supplemental/Li_Mistake_Attribution_Fine-Grained_CVPR_2026_supplemental.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-alt"></i></span>
+                  <span>Supplementary</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=JXaOpYyGAgI" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-youtube"></i></span>
+                  <span>Video</span>
+                </a>
+              </span>
+            </div>
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="./static/pdfs/MATT_CVPR2026_poster.pdf" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-image"></i></span>
+                  <span>Poster</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://drive.google.com/file/d/1ib7jhQNlw1Bx4IDhdvoPW_yt8LeSpbXG/view?usp=sharing"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-desktop"></i></span>
+                  <span>Slides</span>
                 </a>
               </span>
               <span class="link-block">
@@ -95,7 +134,7 @@
               </span>
               <span class="link-block">
                 <a href="https://huggingface.co/datasets/yayuanli/MATT-Bench" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="far fa-images"></i></span>
+                  <span class="icon"><i class="fas fa-database"></i></span>
                   <span>Dataset</span>
                 </a>
               </span>
@@ -107,14 +146,33 @@
   </div>
 </section>
 
+
+<!-- Presentation video (CVPR 2026 talk) -->
+<section class="section" id="video" style="padding-top: 0;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Presentation Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube-nocookie.com/embed/JXaOpYyGAgI?rel=0"
+                  title="Mistake Attribution — CVPR 2026 presentation video"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <!-- Teaser -->
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <!-- TODO: Replace with teaser image or video -->
       <img src="./static/images/teaser.png" alt="Teaser figure showing the Mistake Attribution task." style="width: 100%;">
       <h2 class="subtitle has-text-centered">
-        <!-- TODO: Write a one-line teaser caption -->
         <b>Mistake Attribution</b> answers <i>what</i> semantic role was violated, <i>when</i> the mistake became irreversible, and <i>where</i> it occurred in the frame.
       </h2>
     </div>
@@ -144,18 +202,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Paper video. Uncomment when video is ready.
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="TODO_YOUTUBE_EMBED_URL"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-    -->
   </div>
 </section>
 
@@ -173,7 +219,6 @@
             A significant challenge in mistake video analysis is the paucity of available data in the face of massive diversity of possible mistakes. MisEngine overcomes this by automatically creating new mistake understanding datasets from source corpora through a careful series of sampling and cross-matching methods. It uses Semantic Role Labeling on the text instruction and then matches across the available roles (e.g., Object and Predicate), systematically cross-matching an instruction text with descriptions of other action videos to create misaligned pairs. Videos naturally inherit temporal and spatial annotations that we process into the corresponding attribution targets. Applied to Ego4D and EPIC-KITCHENS, MisEngine yields Ego4D-M (257K samples) and EPIC-KITCHENS-M (221K samples)&mdash;at least two orders of magnitude larger than any existing mistake dataset.
           </p>
         </div>
-        <!-- TODO: Replace with MisEngine pipeline figure -->
         <div class="has-text-centered">
           <img src="./static/images/misengine.png" alt="MisEngine data engine pipeline." style="width: 100%;">
         </div>
@@ -185,7 +230,6 @@
             MisFormer jointly processes the instruction text and an attempt video, extracting shared multimodal features. Three specialized transformer heads perform semantic attribution (detecting misaligned roles), temporal localization (pinpointing the Point-of-No-Return frame), and spatial localization (predicting mistake regions via attention-driven bounding boxes), enabling comprehensive and interpretable mistake analysis across semantic, temporal, and spatial dimensions. At inference, the temporal and spatial modules are gated&mdash;invoked only when any role is predicted as Mistake.
           </p>
         </div>
-        <!-- TODO: Replace with MisFormer architecture figure -->
         <div class="has-text-centered">
           <img src="./static/images/misformer.png" alt="MisFormer architecture overview." style="width: 100%;">
         </div>
@@ -209,9 +253,62 @@
           </p>
         </div>
 
-        <!-- TODO: Add qualitative results images/videos here -->
         <div class="has-text-centered">
           <img src="./static/images/results.png" alt="Qualitative results." style="width: 100%;">
+        </div>
+        <h2 class="subtitle has-text-centered" style="margin-top: 0.75rem;">
+          Per-frame PNR probability and the predicted mistake region on two EPIC-KITCHENS-M attempts.
+        </h2>
+
+        <br/>
+
+        <h3 class="title is-4">Attribution at Scale</h3>
+        <div class="media-frame">
+          <video autoplay loop muted playsinline controls
+                 preload="metadata" poster="./static/images/montage_poster.jpg">
+            <source src="./static/videos/montage.mp4" type="video/mp4">
+          </video>
+        </div>
+        <h2 class="subtitle has-text-centered" style="margin-top: 0.75rem;">
+          MisFormer predictions across the benchmark. Every tile pairs an instruction with an attempt video and shows all three attributions at once: the predicate and object marked correct or mistaken (<i>what</i>), the predicted Point-of-No-Return on the timeline (<i>when</i>), and the attention heatmap with its regressed box (<i>where</i>).
+        </h2>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Poster & Slides -->
+<section class="section" id="poster">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Poster &amp; Slides</h2>
+
+        <a href="./static/pdfs/MATT_CVPR2026_poster.pdf" target="_blank" rel="noopener" class="media-frame is-clickable">
+          <img src="./static/images/poster_preview.jpg" alt="CVPR 2026 poster for Mistake Attribution. Click to open the full-resolution PDF.">
+        </a>
+        <h2 class="subtitle has-text-centered" style="margin-top: 0.75rem;">
+          Click the poster to open the full-resolution PDF.
+        </h2>
+
+        <div class="has-text-centered" style="margin-top: 1.5rem;">
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="./static/pdfs/MATT_CVPR2026_poster.pdf" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-image"></i></span>
+                <span>Poster (PDF, 5&nbsp;MB)</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://drive.google.com/file/d/1ib7jhQNlw1Bx4IDhdvoPW_yt8LeSpbXG/view?usp=sharing"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-desktop"></i></span>
+                <span>Slides (PPTX, 77&nbsp;MB)</span>
+              </a>
+            </span>
+          </div>
         </div>
 
       </div>
@@ -237,10 +334,16 @@
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a class="icon-link" href="https://arxiv.org/pdf/2511.20525">
+      <a class="icon-link" href="https://openaccess.thecvf.com/content/CVPR2026/html/Li_Mistake_Attribution_Fine-Grained_Mistake_Understanding_in_Egocentric_Videos_CVPR_2026_paper.html" title="CVF Open Access">
         <i class="fas fa-file-pdf"></i>
       </a>
-      <a class="icon-link" href="https://github.com/yayuanli/MATT" class="external-link">
+      <a class="icon-link" href="https://arxiv.org/abs/2511.20525" title="arXiv">
+        <i class="ai ai-arxiv"></i>
+      </a>
+      <a class="icon-link" href="https://www.youtube.com/watch?v=JXaOpYyGAgI" title="Presentation video">
+        <i class="fab fa-youtube"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/yayuanli/MATT" title="Code">
         <i class="fab fa-github"></i>
       </a>
     </div>

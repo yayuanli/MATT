@@ -155,3 +155,38 @@ body {
 #interpolation-image-wrapper img {
   border-radius: 5px;
 }
+
+
+/* ---- Media frames: shared shell for the montage video and the poster preview ---- */
+
+.media-frame {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fff;
+  line-height: 0;
+}
+
+.media-frame img,
+.media-frame video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.media-frame.is-clickable {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.media-frame.is-clickable:hover {
+  border-color: #b5b5b5;
+  box-shadow: 0 4px 18px rgba(10, 10, 10, 0.14);
+}
+
+/* Figure captions sit tighter under their media than Bulma's default. */
+.section .subtitle {
+  font-size: 1rem;
+  color: #4a4a4a;
+}
