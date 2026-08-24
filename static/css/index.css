@@ -169,8 +169,7 @@ body {
   line-height: 0;
 }
 
-.media-frame img,
-.media-frame video {
+.media-frame img {
   display: block;
   width: 100%;
   height: auto;
